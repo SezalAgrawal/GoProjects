@@ -9,4 +9,5 @@ func main() {
 
 	fmt.Println(x, y, z)
 	fmt.Printf("%v\n%v\n%v\n", x, y, z)
+
 }

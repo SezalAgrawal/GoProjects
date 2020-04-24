@@ -4,7 +4,7 @@ import(
 	"fmt"
 )
 
-func main() {
+func main1() {
 	//scope of x is limited to if
 	if x := 42; x == 2{
 		fmt.Printf("Here")
