@@ -26,6 +26,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/album", showAlbum)
+	mux.HandleFunc("/like", addLike)
 	log.Println("Listening on 4000...")
 	http.ListenAndServe(":4000", mux)
 }
@@ -54,4 +55,31 @@ func showAlbum(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, "%s by %s: £%.2f [%d likes] \n", bk.Title, bk.Artist, bk.Price, bk.Likes)
+}
+
+func addLike(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		w.Header().Set("Allow", http.MethodPost)
+		http.Error(w, http.StatusText(405), 405)
+		return
+	}
+	id := r.PostFormValue("id")
+	if id == "" {
+		http.Error(w, http.StatusText(400), 400)
+		return
+	}
+	if _, err := strconv.Atoi(id); err != nil {
+		http.Error(w, http.StatusText(400), 400)
+		return
+	}
+	err := IncrementLikes(id)
+	if err == errNoAlbum {
+		http.NotFound(w, r)
+		return
+	} else if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+	// redirect to show album
+	http.Redirect(w, r, "/album?id="+id, 303)
 }

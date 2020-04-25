@@ -55,3 +55,41 @@ func FindAlbum(id string) (*Album, error) {
 	fmt.Printf("%+v\n", album)
 	return &album, nil
 }
+
+// IncrementLikes increments like of an album
+func IncrementLikes(id string) error {
+	// establish connection with Redis server on deafult port 6379
+	conn := pool.Get()
+	defer conn.Close()
+
+	exists, err := redis.Int(conn.Do("EXISTS", "album:"+id))
+	if err != nil {
+		return err
+	} else if exists == 0 {
+		return errNoAlbum
+	}
+
+	// start transaction to avoid race condition
+	err = conn.Send("MULTI")
+	if err != nil {
+		return err
+	}
+
+	// increment like count
+	err = conn.Send("HINCRBY", "album:"+id, "likes", 1)
+	if err != nil {
+		return err
+	}
+	// imcrement count in sorted set
+	err = conn.Send("ZINCRBY", "likes", 1, id)
+	if err != nil {
+		return err
+	}
+
+	// execute transaction
+	_, err = conn.Do("EXEC")
+	if err != nil {
+		return err
+	}
+	return nil
+}
