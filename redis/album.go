@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/gomodule/redigo/redis"
 )
@@ -92,4 +93,63 @@ func IncrementLikes(id string) error {
 		return err
 	}
 	return nil
+}
+
+// FindTopThree finds top 3 albums based on likes
+func FindTopThree() ([]Album, error) {
+	// establish connection with Redis server on deafult port 6379
+	conn := pool.Get()
+	defer conn.Close()
+
+	// infinite loop
+	// can set number of attempts
+	for {
+		// watch for any changes in likes sorted set
+		_, err := conn.Do("WATCH", "likes")
+		if err != nil {
+			return nil, err
+		}
+
+		// use ZREVRANGE to get top 3 albums
+		ids, err := redis.Strings(conn.Do("ZREVRANGE", "likes", 0, 2))
+		if err != nil {
+			return nil, err
+		}
+
+		// start transaction to avoid race condition
+		err = conn.Send("MULTI")
+		if err != nil {
+			return nil, err
+		}
+
+		// fetch album details
+		for _, id := range ids {
+			err := conn.Send("HGETALL", "album:"+id)
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		// execute transaction
+		replies, err := redis.Values(conn.Do("EXEC"))
+		if err == redis.ErrNil {
+			// sorted set of likes got updated, while reading the values
+			log.Println("trying again")
+			continue
+		} else if err != nil {
+			return nil, err
+		}
+
+		albums := make([]Album, len(replies))
+
+		for i, reply := range replies {
+			var album Album
+			err := redis.ScanStruct(reply.([]interface{}), &album)
+			if err != nil {
+				return nil, err
+			}
+			albums[i] = album
+		}
+		return albums, nil
+	}
 }
