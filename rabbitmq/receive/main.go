@@ -28,7 +28,6 @@ func main() {
 	// create queue. A message is published to a queue
 	// Queue is declared on both sender and receiver as we might start consumer before publisher
 	// and we want to make sure queue exists before we start consuming messages from it.
-	// test
 	q, err := channel.QueueDeclare(
 		"hello",
 		false,
