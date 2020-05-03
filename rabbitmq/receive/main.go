@@ -41,7 +41,7 @@ func main() {
 	}
 
 	// create a consumer to consume messages from channel
-	err = channel.Consume(
+	msgs, err := channel.Consume(
 		q.Name,
 		"",
 		true, // auto-ack
@@ -55,8 +55,12 @@ func main() {
 	}
 
 	forever := make(chan bool)
-
 	go func() {
+		for msg := range msgs {
+			log.Printf("Received a message: %s", msg.Body)
+		}
+	}()
 
-	}
+	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	<-forever
 }
