@@ -44,14 +44,18 @@ func main() {
 		panic("error declaring the queue: " + err.Error())
 	}
 
-	// err = channel.Qos(
-	// 	1, 		// prefetch count
-	// 	0, 		// prefetch size
-	// 	false, 	// global
-	// )
-	// if err != nil {
-	// 	panic("error sending Qos: " + err.Error())
-	// }
+	// fair dispatch of messages
+	// here prefetch count 1 means that the queue would not send more than 1
+	// message to a worker. It will wait till it receives ack.
+	// This ensures that heavy and light tasks are efficiently distributed
+	err = channel.Qos(
+		1, 		// prefetch count
+		0, 		// prefetch size
+		false, 	// global
+	)
+	if err != nil {
+		panic("error sending Qos: " + err.Error())
+	}
 
 	// create a consumer to consume messages from channel
 	msgs, err := channel.Consume(
