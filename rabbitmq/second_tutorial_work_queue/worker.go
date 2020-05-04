@@ -57,7 +57,7 @@ func main() {
 	msgs, err := channel.Consume(
 		q.Name,
 		"",
-		true, // auto-ack set to false
+		false, // auto-ack set to false
 		false,
 		false,
 		false,
@@ -75,7 +75,12 @@ func main() {
 			duration := time.Duration(dotCount)
 			time.Sleep(duration * time.Second)
 			log.Printf("done")
-			// msg.Ack(false)
+			// For this auto-ack in channel is set to false
+			// when a consumer consumes a message it sends an ack
+			// back to the receiver, thereby deleting from the queue.
+			// If did not receive ack, then the message gets delivered using
+			// some other worker node
+			msg.Ack(false)
 		}
 	}()
 
