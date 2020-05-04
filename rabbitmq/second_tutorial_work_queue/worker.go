@@ -34,7 +34,7 @@ func main() {
 	// and we want to make sure queue exists before we start consuming messages from it.
 	q, err := channel.QueueDeclare(
 		"task_queue",
-		true,
+		true, // durable -> This tells that queue will survive rabbitMQ node restart 
 		false,
 		false,
 		false,

@@ -32,7 +32,7 @@ func main() {
 	// create queue. A message is published to a queue
 	q, err := channel.QueueDeclare(
 		"task_queue",
-		true,
+		true, // durable
 		false,
 		false,
 		false,
@@ -50,6 +50,10 @@ func main() {
 		false,
 		false,
 		amqp.Publishing{
+			// marks messages as persistent. 
+			// These persistent guarantees are not strong, because there is a time gap
+			// when the node has accepted message and saved to disk
+			// In that small time gap, we might loose the message
 			DeliveryMode: amqp.Persistent,
 			ContentType: "text/plain",
 			Body:        []byte(body),
