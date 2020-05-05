@@ -1,5 +1,7 @@
 package main
 
+// Ref: https://www.alexedwards.net/blog/working-with-redis
+
 // Usecase: online record shop, and want to store info about albums for sale in Redis
 // store info of a album as hash: fields like title, artist, likes, price
 // key of the hash is album:{id}
