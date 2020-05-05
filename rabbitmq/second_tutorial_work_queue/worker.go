@@ -3,12 +3,13 @@ package main
 // It fakes a second of work for every dot in message body.
 // Pops message form queue and performs the task
 // If started multiple workers, they work in a round-robin dispatching way
-// Thus, if there is a lot of backlog of works, one could deploy extra worker nodes, 
+// Thus, if there is a lot of backlog of works, one could deploy extra worker nodes,
 // this will help in scaling. On average every consumer gets equal messages
 import (
+	"bytes"
 	"log"
 	"time"
-	"bytes"
+
 	"github.com/streadway/amqp"
 )
 
@@ -34,7 +35,7 @@ func main() {
 	// and we want to make sure queue exists before we start consuming messages from it.
 	q, err := channel.QueueDeclare(
 		"task_queue",
-		true, // durable -> This tells that queue will survive rabbitMQ node restart 
+		true, // durable -> This tells that queue will survive rabbitMQ node restart
 		false,
 		false,
 		false,
@@ -49,9 +50,9 @@ func main() {
 	// message to a worker. It will wait till it receives ack.
 	// This ensures that heavy and light tasks are efficiently distributed
 	err = channel.Qos(
-		1, 		// prefetch count
-		0, 		// prefetch size
-		false, 	// global
+		1,     // prefetch count
+		0,     // prefetch size
+		false, // global
 	)
 	if err != nil {
 		panic("error sending Qos: " + err.Error())

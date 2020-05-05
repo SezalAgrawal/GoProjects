@@ -39,7 +39,7 @@ func main() {
 	// publish a message to queue
 	body := "Hello World!"
 	err = channel.Publish(
-		"",
+		"", // default exchange
 		q.Name,
 		false,
 		false,
