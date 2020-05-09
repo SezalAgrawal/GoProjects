@@ -8,7 +8,9 @@ var y = 2
 
 //assign 0 for int, 0.0 for float, "" for string, nil for pointers, false for bool
 var z int
+
 type t int
+
 var s t
 
 //untyped constant
@@ -17,15 +19,15 @@ const (
 )
 
 //typed constant
-const c int  = 34
+const c int = 34
 
 //byte = unit8
 //rune = int32
 
 const (
 	d = iota //0
-	e		 //1
-	f		 //2
+	e        //1
+	f        //2
 )
 
 func main() {

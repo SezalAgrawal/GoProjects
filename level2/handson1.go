@@ -5,19 +5,19 @@ import (
 )
 
 //create typed and untyped constants
-const(
+const (
 	y int = 3
-	z = 4
+	z     = 4
 )
 
-const(
+const (
 	a = 2017 + iota
 	b
 	c
 	d
 )
 
-func main(){
+func main() {
 	x := 3
 	//Print decimal, binary, hex
 	fmt.Printf("%d, %b, %#x\n", x, x, x)

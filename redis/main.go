@@ -103,8 +103,8 @@ func listPopular(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(500), 500)
 		return
 	}
-	for i, ab := range albums  {
+	for i, ab := range albums {
 		fmt.Fprintf(w, "%d) %s by %s: £%.2f [%d likes] \n", i+1, ab.Title, ab.Artist, ab.Price, ab.Likes)
 	}
-	
+
 }
