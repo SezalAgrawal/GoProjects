@@ -30,6 +30,7 @@ func main() {
 	defer channel.Close()
 
 	// create queue. A message is published to a queue
+	// It is marked as durable. Both queue and messages have to be marked durale
 	q, err := channel.QueueDeclare(
 		"task_queue",
 		true, // durable
