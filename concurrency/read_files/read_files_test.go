@@ -8,34 +8,34 @@ import (
 	"time"
 )
 
-var numbers []int
+var files []string
 
 func init() {
 	rand.Seed(time.Now().UnixNano())
-	numbers = generateRandomNumbers(1e7)
-	fmt.Printf("Processing %d numbers using %d goroutines\n", len(numbers), runtime.NumCPU())
+	files = generateRandomFiles(1e3)
+	fmt.Printf("Processing %d files using %d goroutines\n", len(files), runtime.NumCPU())
 }
 
 func BenchmarkSequential(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		addSequential(numbers)
+		findSequential("test", files)
 	}
 }
 
 func BenchmarkConcurrent(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		addConcurrent(runtime.NumCPU(), numbers)
+		findConcurrentWithChannel(runtime.NumCPU(), "test", files)
 	}
 }
 
 func BenchmarkSequentialAgain(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		addSequential(numbers)
+		findSequential("test", files)
 	}
 }
 
 func BenchmarkConcurrentAgain(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		addConcurrent(runtime.NumCPU(), numbers)
+		findConcurrentWithChannel(runtime.NumCPU(), "test", files)
 	}
 }
