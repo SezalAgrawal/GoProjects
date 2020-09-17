@@ -81,7 +81,7 @@ func IncrementLikes(id string) error {
 	if err != nil {
 		return err
 	}
-	// imcrement count in sorted set
+	// increment count in sorted set
 	err = conn.Send("ZINCRBY", "likes", 1, id)
 	if err != nil {
 		return err
