@@ -1,3 +1,5 @@
+// Ref: https://github.com/yurishkuro/opentracing-tutorial/blob/master/go/lesson02/README.md
+
 // Trace individual functions
 // Combine multiple spans into a single trace
 // Propagate the in-process context

@@ -1,3 +1,5 @@
+// Ref: https://github.com/yurishkuro/opentracing-tutorial/tree/master/go/lesson01
+
 // Instantiate a Tracer
 // Create a simple trace
 // Annotate the trace
