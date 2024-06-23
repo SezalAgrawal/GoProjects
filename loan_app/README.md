@@ -124,6 +124,15 @@ To be added as and when needed.
 
 ## Pending things to add
 
+- More test coverage
+- Add user lock to avoid concurrency edge cases
+- Add loan interest/penalty support
+- Add some instrumentation library like newRelic
+- Add events
+- Along with roles, permissions can also be added
+- CRON job to move installment status to payment_pending
+- Dockerfile is not working, need more time to debug
+
 ## Apis
 
 Refer postman collection for list of all apis
