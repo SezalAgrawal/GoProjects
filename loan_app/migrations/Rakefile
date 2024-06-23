@@ -1,0 +1,63 @@
+require "strong_migrations"
+require "active_record"
+
+# Below code siphoned off from: https://github.com/rosenfeld/active_record_migrations
+# ref: https://stackoverflow.com/questions/11882345/generate-migrations-outside-rails
+
+load 'active_record/railties/databases.rake'
+
+ActiveRecord::Migration.prepend(StrongMigrations::Migration)
+include ActiveRecord::Tasks
+
+class SeedLoader
+  def initialize(seed_file)
+    @seed_file = seed_file
+  end
+
+  def load_seed
+    raise "Seed file '#{@seed_file}' does not exist" unless File.file?(@seed_file)
+    load @seed_file
+  end
+end
+
+DatabaseTasks.env = ENV['ENV'] || 'development'
+DatabaseTasks.root = File.expand_path('..', __FILE__)
+DatabaseTasks.db_dir = 'db'
+DatabaseTasks.migrations_paths= 'db/migrate'
+DatabaseTasks.seed_loader = SeedLoader.new('db/seeds.rb')
+DatabaseTasks.singleton_class.prepend(StrongMigrations::DatabaseTasks)
+DatabaseTasks.structure_dump_flags = {
+  # '--schema-only', '--no-privileges', '--no-owner' is added by default
+  postgresql: ['--clean', '--if-exists']
+}
+
+task :environment do
+  ENV["RAILS_ENV"] = DatabaseTasks.env
+  ActiveRecord::Base.establish_connection(ENV['DATABASE_URL'])
+  ActiveRecord.schema_format = :sql
+  ActiveRecord.dump_schema_after_migration = false
+  dump_schema = ENV["DUMP_SCHEMA_AFTER_MIGRATION"].to_s.downcase
+  unless ["true", "false"].include?(dump_schema)
+      raise StandardError.new("DUMP_SCHEMA_AFTER_MIGRATION environment variable is either missing or must be true or false")
+  end
+
+  if dump_schema == "true"
+    puts("Dumping schema")
+    raise StandardError.new("cannot dump schema in non development environment") if DatabaseTasks.env != "development"
+    ActiveRecord.dump_schema_after_migration = true
+  end
+end
+
+
+namespace :db do
+  namespace :migrate do
+    desc "generates new migration file"
+    task :new do |_, args|
+    name = ENV['name']
+    raise "name is required parameter. `rake db:migrate:new name=InitSetup`" unless name
+    require 'rails/generators'
+    require 'rails/generators/active_record/migration/migration_generator'
+    ActiveRecord::Generators::MigrationGenerator.new([name], {}).create_migration_file
+    end
+  end
+end

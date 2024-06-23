@@ -1,0 +1,12 @@
+# We use docker-compose only for local development flows and is not part of any release/deployment pipelines.
+version: '3'
+services:
+  loan_app:
+    build: .
+    image: loan_app:latest
+    env_file:
+      - development.env
+    ports:
+      - "8102:8102"
+    volumes:
+      - ./:/loan_app
