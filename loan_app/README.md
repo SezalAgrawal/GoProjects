@@ -77,6 +77,19 @@ Once the local postgres database as been set up, run the following commands to a
 # Install the dependencies from the GemFile
 > bundle install
 
+# Load values from env config in console
+```sh
+loadenv()
+{
+  echo "Loading $1"
+  for i in $(cat $1); do
+    export $i
+  done
+}
+
+loadenv development.env
+```
+
 # skip this command if the database has already been created
 > bundle exec rake db:create
 
@@ -120,7 +133,7 @@ To be added as and when needed.
 - Remainder loan amount is distributed over all the last remaining loan installments instead of just last one. Generally in my opinion, initial installments should have the extra remainder amount. Can be tweaked as needed.
 - one_time_settlements table exists in separate repayment system
 - Cents is used as lower denomination. It can be tweaked as needed.
-- Seed role as needed.
+- Seed role as needed. Attached image for sample data.
 
 ## Pending things to add
 
