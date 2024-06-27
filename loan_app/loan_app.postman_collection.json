@@ -6,7 +6,7 @@
 	},
 	"item": [
 		{
-			"name": "create user",
+			"name": "1. create user",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -73,7 +73,210 @@
 			"response": []
 		},
 		{
-			"name": "approve loan",
+			"name": "2. login user",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var uuid = require('uuid'); ",
+							"var nonce = uuid.v4();",
+							"var servicekey = pm.environment.get(\"loan_service_key\");",
+							"var serviceid = pm.environment.get(\"loan_service_id\");",
+							"var data = nonce + \"-\" + serviceid;",
+							"console.log(servicekey);",
+							"console.log(data);",
+							"var hash = CryptoJS.HmacSHA1(data,servicekey);",
+							"var signature = CryptoJS.enc.Hex.stringify(hash);",
+							"console.log(signature);",
+							"pm.environment.set(\"LOAN_SERVICE_ID\", serviceid);",
+							"pm.environment.set(\"LOAN_SERVICE_NONCE\", nonce);",
+							"pm.environment.set(\"LOAN_SERVICE_SIGNATURE\", signature);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Loan-Service-Id",
+						"type": "text",
+						"value": "{{LOAN_SERVICE_ID}}"
+					},
+					{
+						"key": "Loan-Service-Nonce",
+						"type": "text",
+						"value": "{{LOAN_SERVICE_NONCE}}"
+					},
+					{
+						"key": "Loan-Service-Signature",
+						"type": "text",
+						"value": "{{LOAN_SERVICE_SIGNATURE}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"admin\",\n    \"password\": \"admin@123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOAN_API_URL}}/api/v1/users/login",
+					"host": [
+						"{{LOAN_API_URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. create loan",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var uuid = require('uuid'); ",
+							"var nonce = uuid.v4();",
+							"var servicekey = pm.environment.get(\"loan_service_key\");",
+							"var serviceid = pm.environment.get(\"loan_service_id\");",
+							"var data = nonce + \"-\" + serviceid;",
+							"console.log(servicekey);",
+							"console.log(data);",
+							"var hash = CryptoJS.HmacSHA1(data,servicekey);",
+							"var signature = CryptoJS.enc.Hex.stringify(hash);",
+							"console.log(signature);",
+							"pm.environment.set(\"LOAN_SERVICE_ID\", serviceid);",
+							"pm.environment.set(\"LOAN_SERVICE_NONCE\", nonce);",
+							"pm.environment.set(\"LOAN_SERVICE_SIGNATURE\", signature);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Loan-Service-Id",
+						"type": "text",
+						"value": "{{LOAN_SERVICE_ID}}"
+					},
+					{
+						"key": "Loan-Service-Nonce",
+						"type": "text",
+						"value": "{{LOAN_SERVICE_NONCE}}"
+					},
+					{
+						"key": "Loan-Service-Signature",
+						"type": "text",
+						"value": "{{LOAN_SERVICE_SIGNATURE}}"
+					},
+					{
+						"key": "Access-Token",
+						"type": "text",
+						"value": "2iI8l062Df7tFwoB7AUIIlNxqdS"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"amount_in_cents\": 100,\n    \"term\": 3,\n    \"frequency_in_days\": 7\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{LOAN_API_URL}}/api/v1/loans",
+					"host": [
+						"{{LOAN_API_URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"loans"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "4. get all loans",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var uuid = require('uuid'); ",
+							"var nonce = uuid.v4();",
+							"var servicekey = pm.environment.get(\"loan_service_key\");",
+							"var serviceid = pm.environment.get(\"loan_service_id\");",
+							"var data = nonce + \"-\" + serviceid;",
+							"console.log(servicekey);",
+							"console.log(data);",
+							"var hash = CryptoJS.HmacSHA1(data,servicekey);",
+							"var signature = CryptoJS.enc.Hex.stringify(hash);",
+							"console.log(signature);",
+							"pm.environment.set(\"LOAN_SERVICE_ID\", serviceid);",
+							"pm.environment.set(\"LOAN_SERVICE_NONCE\", nonce);",
+							"pm.environment.set(\"LOAN_SERVICE_SIGNATURE\", signature);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Loan-Service-Id",
+						"type": "text",
+						"value": "{{LOAN_SERVICE_ID}}"
+					},
+					{
+						"key": "Loan-Service-Nonce",
+						"type": "text",
+						"value": "{{LOAN_SERVICE_NONCE}}"
+					},
+					{
+						"key": "Loan-Service-Signature",
+						"type": "text",
+						"value": "{{LOAN_SERVICE_SIGNATURE}}"
+					},
+					{
+						"key": "Access-Token",
+						"type": "text",
+						"value": "2iI8l062Df7tFwoB7AUIIlNxqdS"
+					}
+				],
+				"url": {
+					"raw": "{{LOAN_API_URL}}/api/v1/loans",
+					"host": [
+						"{{LOAN_API_URL}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"loans"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. approve loan",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -144,7 +347,7 @@
 			"response": []
 		},
 		{
-			"name": "pay loan",
+			"name": "6. pay loan",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -224,210 +427,7 @@
 			"response": []
 		},
 		{
-			"name": "create loan",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"var uuid = require('uuid'); ",
-							"var nonce = uuid.v4();",
-							"var servicekey = pm.environment.get(\"loan_service_key\");",
-							"var serviceid = pm.environment.get(\"loan_service_id\");",
-							"var data = nonce + \"-\" + serviceid;",
-							"console.log(servicekey);",
-							"console.log(data);",
-							"var hash = CryptoJS.HmacSHA1(data,servicekey);",
-							"var signature = CryptoJS.enc.Hex.stringify(hash);",
-							"console.log(signature);",
-							"pm.environment.set(\"LOAN_SERVICE_ID\", serviceid);",
-							"pm.environment.set(\"LOAN_SERVICE_NONCE\", nonce);",
-							"pm.environment.set(\"LOAN_SERVICE_SIGNATURE\", signature);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Loan-Service-Id",
-						"type": "text",
-						"value": "{{LOAN_SERVICE_ID}}"
-					},
-					{
-						"key": "Loan-Service-Nonce",
-						"type": "text",
-						"value": "{{LOAN_SERVICE_NONCE}}"
-					},
-					{
-						"key": "Loan-Service-Signature",
-						"type": "text",
-						"value": "{{LOAN_SERVICE_SIGNATURE}}"
-					},
-					{
-						"key": "Access-Token",
-						"value": "2iI8l062Df7tFwoB7AUIIlNxqdS",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"amount_in_cents\": 100,\n    \"term\": 3,\n    \"frequency_in_days\": 7\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOAN_API_URL}}/api/v1/loans",
-					"host": [
-						"{{LOAN_API_URL}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"loans"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "get all loans",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"var uuid = require('uuid'); ",
-							"var nonce = uuid.v4();",
-							"var servicekey = pm.environment.get(\"loan_service_key\");",
-							"var serviceid = pm.environment.get(\"loan_service_id\");",
-							"var data = nonce + \"-\" + serviceid;",
-							"console.log(servicekey);",
-							"console.log(data);",
-							"var hash = CryptoJS.HmacSHA1(data,servicekey);",
-							"var signature = CryptoJS.enc.Hex.stringify(hash);",
-							"console.log(signature);",
-							"pm.environment.set(\"LOAN_SERVICE_ID\", serviceid);",
-							"pm.environment.set(\"LOAN_SERVICE_NONCE\", nonce);",
-							"pm.environment.set(\"LOAN_SERVICE_SIGNATURE\", signature);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Loan-Service-Id",
-						"type": "text",
-						"value": "{{LOAN_SERVICE_ID}}"
-					},
-					{
-						"key": "Loan-Service-Nonce",
-						"type": "text",
-						"value": "{{LOAN_SERVICE_NONCE}}"
-					},
-					{
-						"key": "Loan-Service-Signature",
-						"type": "text",
-						"value": "{{LOAN_SERVICE_SIGNATURE}}"
-					},
-					{
-						"key": "Access-Token",
-						"type": "text",
-						"value": "2iI8l062Df7tFwoB7AUIIlNxqdS"
-					}
-				],
-				"url": {
-					"raw": "{{LOAN_API_URL}}/api/v1/loans",
-					"host": [
-						"{{LOAN_API_URL}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"loans"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "login user",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"var uuid = require('uuid'); ",
-							"var nonce = uuid.v4();",
-							"var servicekey = pm.environment.get(\"loan_service_key\");",
-							"var serviceid = pm.environment.get(\"loan_service_id\");",
-							"var data = nonce + \"-\" + serviceid;",
-							"console.log(servicekey);",
-							"console.log(data);",
-							"var hash = CryptoJS.HmacSHA1(data,servicekey);",
-							"var signature = CryptoJS.enc.Hex.stringify(hash);",
-							"console.log(signature);",
-							"pm.environment.set(\"LOAN_SERVICE_ID\", serviceid);",
-							"pm.environment.set(\"LOAN_SERVICE_NONCE\", nonce);",
-							"pm.environment.set(\"LOAN_SERVICE_SIGNATURE\", signature);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Loan-Service-Id",
-						"type": "text",
-						"value": "{{LOAN_SERVICE_ID}}"
-					},
-					{
-						"key": "Loan-Service-Nonce",
-						"type": "text",
-						"value": "{{LOAN_SERVICE_NONCE}}"
-					},
-					{
-						"key": "Loan-Service-Signature",
-						"type": "text",
-						"value": "{{LOAN_SERVICE_SIGNATURE}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"name\": \"admin\",\n    \"password\": \"admin@123\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{LOAN_API_URL}}/api/v1/users/login",
-					"host": [
-						"{{LOAN_API_URL}}"
-					],
-					"path": [
-						"api",
-						"v1",
-						"users",
-						"login"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "logout user",
+			"name": "7. logout user",
 			"event": [
 				{
 					"listen": "prerequest",
