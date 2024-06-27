@@ -153,3 +153,78 @@ Refer postman collection for list of all apis
 ## Roles Seeded
 
 ![alt text](image.png)
+
+## Flow to test apis
+
+1. Make sure you create roles. I did not have bandwidth to expose apis to create role. For now, you can create role as following by directly running these SQL queries in loan_development database:
+
+```sql
+INSERT INTO roles(
+ id, name, created_at, updated_at)
+ VALUES ('rol_123', 'USER', now(), now()),
+        ('rol_124', 'ADMIN', now(), now());
+```
+
+![alt text](image-1.png)
+
+1. Once this is done, we are ready to test the apis. Lets start by calling create user api `POST /api/v1/users`. We need to create 2 users, one customer and one admin. You can use the following payload. This api will create user and its associated role.
+
+customer
+
+```json
+{
+    "name": "john",
+    "password": "john@123",
+    "role_id": "rol_123"
+}
+```
+
+Admin user
+
+```json
+{
+    "name": "admin",
+    "password": "admin@123",
+    "role_id": "rol_124"
+}
+```
+
+1. Once user is created, we need to generate access_token which is used in subsequent apis to authenticate the user. You can call login api `POST /api/v1/users/login` to get user's access token. Please pass the name and password used while creating user here. You need to create access_token for both customer and admin user. Save both of them with you. You would need admin's access token for calling approve loan api.
+
+customer login
+
+```json
+{
+    "name": "john",
+    "password": "john@123"
+}
+```
+
+1. Once you get customer's access token, you can call create loan api to create loan `POST /api/v1/loans`. Make sure to update access token you received in the previous call in `Access-Token` header of this api. In the response, you would get loan.id. Save that for further api calls.
+
+sample request
+
+```json
+{
+    "amount_in_cents": 100,
+    "term": 3,
+    "frequency_in_days": 7
+}
+```
+
+1. Once loan is created, you can call get loans api to list down loans of a user `GET /api/v1/loans`. Make sure to update access token you received for customer in `Access-Token` header of this api.
+
+1. Now, that loan is created, admin needs to approve the loan. You can call approve loan api `POST /api/v1/loans/:id/approve` to get this done. Make sure to update access token you received for `admin` in `Access-Token` header of this api. If you use customer's access token, it would give you 401 unauthenticated as user doesn't have the necessary role. Make sure to update `:id` path param with the loan_id you received in create loan api. This api would result in all installment creation with their amount split and due_dates.
+
+1. Now, once the loan is approved, customer can start paying in parts/full. You can call pay loan api `POST /api/v1/loans/:id/payment`.Make sure to update access token you received for customer in `Access-Token` header of this api. Make sure to update `:id` path param with the loan_id you received in create loan api. You can call this api multiple times for a loan until all tme amount has been paid. Pass any dummy one_time_settlement_id for now.
+
+sample request
+
+```json
+{
+    "one_time_settlement_id": "ots_123",
+    "amount_in_cents": 46
+}
+```
+
+1. Finally you can cleanup user's access token by calling logout api `DELETE /api/v1/users/logout`. Make sure to update access token you received for customer in `Access-Token` header of this api. Once this is done, user will not be able to call loan related apis. User has to login again to get new access token.
